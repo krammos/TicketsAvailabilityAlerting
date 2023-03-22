@@ -1,4 +1,7 @@
 ﻿using System.Net;
+using System.Net.Mail;
+using System.Text;
+
 
 namespace TicketsAvailabilityAlerting
 {
@@ -9,29 +12,41 @@ namespace TicketsAvailabilityAlerting
         static int timerInSec = 5;
         static string url = "";
         static string ticketsSiteHtmlCode = "";
+        static bool mailSent = false;
 
 
         static void Main(string[] args)
         {
-            ConsoleWriteIntroduction();
-
-            if (args.Length == 1 && args[0] == "soundtest")
+            try
             {
-                Beep();
+                ConsoleWriteIntroduction();
+
+                if (args.Length == 1 && args[0] == "soundtest")
+                {
+                    Beep();
+                }
+                else if (args.Length == 1 && args[0] == "mailtest")
+                {
+                    SendMail();
+                }
+                else if (args.Length == 3 && Int32.TryParse(args[1], out timerInSec))
+                {
+                    url = args[0];
+                    arrayOfKeywords = Array.ConvertAll(args[2].Split(','), p => p.Trim());
+
+                    Timer t = new(TimerCallback, null, 0, 1000 * timerInSec);
+
+                    ConsoleWriteExit();
+                    while (Console.Read() != 'q') ;
+                }
+                else
+                {
+                    ConsoleWriteNotRightUsage();
+                }
             }
-            else if (args.Length == 3 && Int32.TryParse(args[1], out timerInSec))
+            catch (Exception ex)
             {
-                url = args[0];
-                arrayOfKeywords = Array.ConvertAll(args[2].Split(','), p => p.Trim());
-
-                Timer t = new(TimerCallback, null, 0, 1000 * timerInSec);
-
-                ConsoleWriteExit();
-                while (Console.Read() != 'q') ;
-            }
-            else
-            {
-                ConsoleWriteNotRightUsage();
+                ConsoleWriteFailure(ex.Message);
             }
         }
 
@@ -44,10 +59,51 @@ namespace TicketsAvailabilityAlerting
             {
                 ConsoleWriteSuccess();
                 Beep();
+                
+                if (!mailSent)
+                {
+                    SendMail();
+                    mailSent = true;
+                }
             }
             else
             {
-                ConsoleWriteFailure();
+                ConsoleWriteFailure("Δεν βρέθηκαν οι λέξεις-κλειδιά.");
+            }
+        }
+
+
+        private static void SendMail()
+        {
+            try
+            {
+                using MailMessage mail = new();
+
+                // From
+                mail.From = new MailAddress("konstantinos.rammos@haf.gr", "TicketsAvailabilityAlerting");
+
+                // To
+                mail.To.Add("k.rammos1@gmail.com");
+
+                // Subject
+                mail.Subject = "----- Email by TicketsAvailabilityAlerting App -----";
+
+                // Body
+                StringBuilder template = new();
+                template.AppendLine("Άνοιξαν τα εισιτήρια!");
+                mail.IsBodyHtml = false;
+                mail.Body = template.ToString();
+
+                // SMTP settings
+                using SmtpClient smtp = new("mail.haf.gr", 587);
+                smtp.UseDefaultCredentials = false;
+                smtp.Credentials = new NetworkCredential("konstantinos.rammos@haf.gr", "Qp0i1400()");
+                smtp.EnableSsl = true;
+                smtp.Send(mail);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Σφάλμα κατά την αποστολή του email. Λεπτομέρειες: {ex.Message}");
             }
         }
 
@@ -67,10 +123,12 @@ namespace TicketsAvailabilityAlerting
             Console.WriteLine("***********************************************************************************************************");
             Console.WriteLine("*                                                                                                         *");
             Console.WriteLine("*                                    TICKETS AVAILABILITY ALERTING APP                                    *");
-            Console.WriteLine("*                                                                                                 v1.0.0  *");
+            Console.WriteLine("*                                                                                                 v1.0.1  *");
             Console.WriteLine("***********************************************************************************************************");
             Console.WriteLine();
             Console.WriteLine("Usage: TicketsAvailabilityAlerting soundtest");
+            Console.WriteLine("or");
+            Console.WriteLine("Usage: TicketsAvailabilityAlerting mailtest");
             Console.WriteLine("or");
             Console.WriteLine("Usage: TicketsAvailabilityAlerting <URL> <timer-in-seconds> <comma-separated-search-keywords>");
             Console.WriteLine("Example: TicketsAvailabilityAlerting \"https://www.ticketmaster.gr/aek\" 1 \"ΟΛΥΜΠΙΑΚΟΣ, ΟΣΦΠ, 19/03/2023\"");
@@ -87,10 +145,10 @@ namespace TicketsAvailabilityAlerting
         }
 
 
-        private static void ConsoleWriteFailure()
+        private static void ConsoleWriteFailure(string error)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"{DateTime.Now} - Δεν βρέθηκαν οι λέξεις-κλειδιά.");
+            Console.WriteLine($"{DateTime.Now} - {error}");
             Console.ForegroundColor = ConsoleColor.White;
         }
 
@@ -110,6 +168,7 @@ namespace TicketsAvailabilityAlerting
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.White;
         }
+
 
     } // End of Class
 } // End of Namespace

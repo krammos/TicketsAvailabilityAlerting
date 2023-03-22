@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TicketsAvailabilityAlerting": {
+      "commandName": "Project",
+      "commandLineArgs": "mailtest"
+    }
+  }
+}
