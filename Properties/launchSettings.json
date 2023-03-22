@@ -2,7 +2,7 @@
   "profiles": {
     "TicketsAvailabilityAlerting": {
       "commandName": "Project",
-      "commandLineArgs": "mailtest"
+      "commandLineArgs": "\"https://blazor-university.com/forms/descending-from-inputbase/\" 10 \"we, if\""
     }
   }
 }
