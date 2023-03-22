@@ -2,7 +2,7 @@
   "profiles": {
     "TicketsAvailabilityAlerting": {
       "commandName": "Project",
-      "commandLineArgs": "\"https://blazor-university.com/forms/descending-from-inputbase/\" 10 \"we, if\""
+      "commandLineArgs": "\"25/03/2023\" \"k.rammos1@gmail.com\" 5 \"https://www.ticketmaster.gr/aek/showProductList.html?tkhrq=d160bd3d-0a51-497e-b5ce-1871d697d297&tkhrp=17997d39-9295-483e-b922-139166985727&tkhrts=1679474209&tkhrc=tickethour&tkhre=aek2020&tkhrrt=Safetynet&tkhrh=0fb774421e091c3e7d24ec4ccd09e2e9\""
     }
   }
 }

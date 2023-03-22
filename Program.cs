@@ -9,9 +9,10 @@ namespace TicketsAvailabilityAlerting
     {
         static WebClient client = new();
         static string[]? arrayOfKeywords;
-        static int timerInSec = 5;
+        static string email = "";
         static string url = "";
         static string ticketsSiteHtmlCode = "";
+        static int timerInSec = 5;
         static bool mailSent = false;
 
 
@@ -27,10 +28,11 @@ namespace TicketsAvailabilityAlerting
             {
                 SendMail();
             }
-            else if (args.Length == 3 && Int32.TryParse(args[1], out timerInSec))
+            else if (args.Length == 4 && Int32.TryParse(args[2], out timerInSec))
             {
-                url = args[0];
-                arrayOfKeywords = Array.ConvertAll(args[2].Split(','), p => p.Trim());
+                arrayOfKeywords = Array.ConvertAll(args[0].Split(','), p => p.Trim());
+                email = args[1];
+                url = args[3];
 
                 Timer t = new(TimerCallback, null, 0, 1000 * timerInSec);
 
@@ -81,7 +83,7 @@ namespace TicketsAvailabilityAlerting
             mail.From = new MailAddress("konstantinos.rammos@haf.gr", "TicketsAvailabilityAlerting");
 
             // To
-            mail.To.Add("k.rammos1@gmail.com");
+            mail.To.Add(email);
 
             // Subject
             mail.Subject = "----- Email by TicketsAvailabilityAlerting App -----";
@@ -123,8 +125,8 @@ namespace TicketsAvailabilityAlerting
             Console.WriteLine("or");
             Console.WriteLine("Usage: TicketsAvailabilityAlerting mailtest");
             Console.WriteLine("or");
-            Console.WriteLine("Usage: TicketsAvailabilityAlerting <URL> <timer-in-seconds> <comma-separated-search-keywords>");
-            Console.WriteLine("Example: TicketsAvailabilityAlerting \"https://www.ticketmaster.gr/aek\" 1 \"ΟΛΥΜΠΙΑΚΟΣ, ΟΣΦΠ, 19/03/2023\"");
+            Console.WriteLine("Usage: TicketsAvailabilityAlerting <comma-separated-search-keywords> <e-mail> <timer-in-seconds> <URL>");
+            Console.WriteLine("Example: TicketsAvailabilityAlerting \"ΟΛΥΜΠΙΑΚΟΣ, ΟΣΦΠ, 19/03/2023\" \"kr@gmail.com\" 10 \"https://www.ticketmaster.gr/aek\"");
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.White;
         }
