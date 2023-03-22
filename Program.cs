@@ -1,47 +1,85 @@
-﻿using System.Net;
+﻿using System.Text;
+using System.Net;
 using System.Net.Mail;
-using System.Text;
 
 
 namespace TicketsAvailabilityAlerting
 {
     internal class Program
     {
-        static WebClient client = new();
-        static string[]? arrayOfKeywords;
-        static string email = "";
-        static string url = "";
-        static string ticketsSiteHtmlCode = "";
-        static int timerInSec = 5;
-        static bool mailSent = false;
+        private static WebClient client = new();
+        private static string[]? arrayOfKeywords;
+        private static string email = "";
+        private static string url = "";
+        private static string ticketsSiteHtmlCode = "";
+        private static bool mailSent = false;
+        private static int timerInSec;
 
 
         static void Main(string[] args)
         {
-            ConsoleWriteIntroduction();
+            try
+            {
+                ConsoleWriteIntroduction();
 
-            if (args.Length == 1 && args[0] == "soundtest")
-            {
-                Beep();
-            }
-            else if (args.Length == 1 && args[0] == "mailtest")
-            {
-                SendMail();
-            }
-            else if (args.Length == 4 && Int32.TryParse(args[2], out timerInSec))
-            {
-                arrayOfKeywords = Array.ConvertAll(args[0].Split(','), p => p.Trim());
-                email = args[1];
-                url = args[3];
+                if (args.Length == 0)
+                {
+                    ConsoleWriteNotRightUsage();
+                    return; 
+                }
 
-                Timer t = new(TimerCallback, null, 0, 1000 * timerInSec);
+                switch (args[0])
+                {
+                    case "--testingmode":
+                        if (args.Length == 2 && args[1] == "--soundcheck")
+                        {
+                            Beep();
+                            ConsoleWriteSuccess("Soundcheck is completed.");
+                        }
+                        else if (args.Length == 3 && args[1] == "--mailcheck")
+                        {
+                            email = args[2];
+                            SendMail();
+                            ConsoleWriteSuccess("Mailcheck is completed.");
+                        }
+                        else
+                        {
+                            ConsoleWriteNotRightUsage();
+                        }
+                        break;
+                
+                    case "--normalmode":
+                        if ( args.Length == 9 && 
+                             args.Contains("--url") &&
+                             args.Contains("--timer") &&
+                             args.Contains("--email") &&
+                             args.Contains("--keywords") &&
+                             int.TryParse(args[1 + Array.IndexOf(args, "--timer")], out timerInSec)
+                           )
+                        {
+                            arrayOfKeywords = Array.ConvertAll(args[1 + Array.IndexOf(args, "--keywords")].Split(','), p => p.Trim());
+                            email = args[1 + Array.IndexOf(args, "--email")];
+                            url = args[1 + Array.IndexOf(args, "--url")];
 
-                ConsoleWriteExit();
-                while (Console.Read() != 'q');
+                            Timer t = new(TimerCallback, null, 0, 1000 * timerInSec);
+                            
+                            ConsoleWriteExit();
+                            while (Console.Read() != 'q') ;
+                        }
+                        else
+                        {
+                            ConsoleWriteNotRightUsage();
+                        }
+                        break;
+                
+                    default:
+                        ConsoleWriteNotRightUsage();
+                        break;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                ConsoleWriteNotRightUsage();
+                ConsoleWriteException(ex);
             }
         }
 
@@ -54,9 +92,9 @@ namespace TicketsAvailabilityAlerting
 
                 if (arrayOfKeywords.Any(ticketsSiteHtmlCode.Contains))
                 {
-                    ConsoleWriteSuccess();
+                    ConsoleWriteSuccess("Tickets are available to the public.");
                     Beep();
-
+                    
                     if (!mailSent)
                     {
                         SendMail();
@@ -90,7 +128,7 @@ namespace TicketsAvailabilityAlerting
 
             // Body
             StringBuilder template = new();
-            template.AppendLine("Άνοιξαν τα εισιτήρια!");
+            template.AppendLine("Tickets are available to the public!");
             mail.IsBodyHtml = false;
             mail.Body = template.ToString();
 
@@ -118,7 +156,7 @@ namespace TicketsAvailabilityAlerting
             Console.WriteLine("***********************************************************************************************************");
             Console.WriteLine("*                                                                                                         *");
             Console.WriteLine("*                                    TICKETS AVAILABILITY ALERTING APP                                    *");
-            Console.WriteLine("*                                                                                                 v1.0.1  *");
+            Console.WriteLine("*                                                                                                 v1.1.0  *");
             Console.WriteLine("***********************************************************************************************************");
             Console.WriteLine();
             Console.WriteLine("Usage: TicketsAvailabilityAlerting soundtest");
@@ -132,10 +170,10 @@ namespace TicketsAvailabilityAlerting
         }
 
 
-        private static void ConsoleWriteSuccess()
+        private static void ConsoleWriteSuccess(string message)
         {
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"{DateTime.Now} - Άνοιξαν τα εισιτήρια.");
+            Console.WriteLine($"{DateTime.Now} - {message}");
             Console.ForegroundColor = ConsoleColor.White;
         }
 
@@ -143,23 +181,23 @@ namespace TicketsAvailabilityAlerting
         private static void ConsoleWriteFailure()
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"{DateTime.Now} - Δεν βρέθηκαν οι λέξεις-κλειδιά.");
+            Console.WriteLine($"{DateTime.Now} - Keywords not found.");
             Console.ForegroundColor = ConsoleColor.White;
         }
 
 
         private static void ConsoleWriteNotRightUsage()
         {
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("Όχι σωστή χρήση εφαρμογής. Δες usage.");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("No proper usage of the app.");
             Console.ForegroundColor = ConsoleColor.White;
         }
 
 
         private static void ConsoleWriteExit()
         {
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("Πάτα \'q\' και \'enter\' για έξοδο.");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("Press \'q\' and \'enter\' for exit.");
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.White;
         }
@@ -177,6 +215,8 @@ namespace TicketsAvailabilityAlerting
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(error);
             Console.ForegroundColor = ConsoleColor.White;
+
+            Environment.Exit(0);
         }
 
 
