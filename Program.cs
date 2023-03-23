@@ -24,7 +24,7 @@ namespace TicketsAvailabilityAlerting
 
                 if (args.Length == 0)
                 {
-                    ConsoleWriteNotRightUsage();
+                    ConsoleWriteNoProperUsage();
                     return; 
                 }
 
@@ -44,7 +44,7 @@ namespace TicketsAvailabilityAlerting
                         }
                         else
                         {
-                            ConsoleWriteNotRightUsage();
+                            ConsoleWriteNoProperUsage();
                         }
                         break;
                 
@@ -64,16 +64,16 @@ namespace TicketsAvailabilityAlerting
                             Timer t = new(TimerCallback, null, 0, 1000 * timerInSec);
                             
                             ConsoleWriteExit();
-                            while (Console.Read() != 'q') ;
+                            while (Console.Read() != 'q');
                         }
                         else
                         {
-                            ConsoleWriteNotRightUsage();
+                            ConsoleWriteNoProperUsage();
                         }
                         break;
                 
                     default:
-                        ConsoleWriteNotRightUsage();
+                        ConsoleWriteNoProperUsage();
                         break;
                 }
             }
@@ -159,12 +159,27 @@ namespace TicketsAvailabilityAlerting
             Console.WriteLine("*                                                                                                 v1.1.0  *");
             Console.WriteLine("***********************************************************************************************************");
             Console.WriteLine();
-            Console.WriteLine("Usage: TicketsAvailabilityAlerting soundtest");
-            Console.WriteLine("or");
-            Console.WriteLine("Usage: TicketsAvailabilityAlerting mailtest");
-            Console.WriteLine("or");
-            Console.WriteLine("Usage: TicketsAvailabilityAlerting <comma-separated-search-keywords> <e-mail> <timer-in-seconds> <URL>");
-            Console.WriteLine("Example: TicketsAvailabilityAlerting \"ΟΛΥΜΠΙΑΚΟΣ, ΟΣΦΠ, 19/03/2023\" \"kr@gmail.com\" 10 \"https://www.ticketmaster.gr/aek\"");
+            Console.WriteLine("Usage:");
+            Console.WriteLine("     TicketsAvailabilityAlerting --testingmode --soundcheck");
+            Console.WriteLine();
+            Console.WriteLine("     TicketsAvailabilityAlerting --testingmode --mailcheck <user-email>");
+            Console.WriteLine();
+            Console.WriteLine("     TicketsAvailabilityAlerting --normalmode");
+            Console.WriteLine("                                 --url <URL>");
+            Console.WriteLine("                                 --keywords <comma-separated-search-keywords>");
+            Console.WriteLine("                                 --timer <timer-in-seconds>");
+            Console.WriteLine("                                 --email <user-email>");
+            Console.WriteLine();
+            Console.WriteLine("Options:");
+            Console.WriteLine("     --testingmode               Testing mode of the app (this option always goes first).");
+            Console.WriteLine("     --soundcheck                Makes a beep sound.");
+            Console.WriteLine("     --mailcheck <user-email>    Sends a testing e-mail.");
+            Console.WriteLine("     --normalmode                Normal mode of the app (this option always goes first).");
+            Console.WriteLine("     --url <URL>                 The url of the website to search.");
+            Console.WriteLine("     --keywords <keywords>       The keywords which the website is searched with (comma-separated).");
+            Console.WriteLine("     --timer <timer-in-seconds>  Set every how many seconds the website is searched.");
+            Console.WriteLine("     --email <user-mail>         The e-mail of the user to be notified if tickets are available.");
+            Console.WriteLine();
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.White;
         }
@@ -186,7 +201,7 @@ namespace TicketsAvailabilityAlerting
         }
 
 
-        private static void ConsoleWriteNotRightUsage()
+        private static void ConsoleWriteNoProperUsage()
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("No proper usage of the app.");
