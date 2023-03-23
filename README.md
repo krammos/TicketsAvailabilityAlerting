@@ -21,6 +21,14 @@ TicketsAvailabilityAlerting --normalmode
 
 OPTIONS:
 
+--testingmode:               Test the app for making beep sound or sending email (this option always goes first).
+
+--soundcheck:                Makes a beep sound.
+
+--mailcheck \<user-email\>:    Sends a testing e-mail.
+
+--normalmode:               Normal mode of the app (this option always goes first).
+
 --url \<URL\>:               The url of the website to search.
 
 --keywords \<keywords\>:       The keywords which the website is searched with (comma-separated).
