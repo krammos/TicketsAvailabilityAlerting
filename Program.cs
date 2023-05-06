@@ -9,7 +9,7 @@ namespace TicketsAvailabilityAlerting
     {
         private static WebClient client = new();
         private static string[]? arrayOfKeywords;
-        private static string email = "";
+        private static string[]? arrayOfEmails;
         private static string url = "";
         private static string ticketsSiteHtmlCode = "";
         private static bool mailSent = false;
@@ -36,9 +36,9 @@ namespace TicketsAvailabilityAlerting
                             Beep();
                             ConsoleWriteSuccess("Soundcheck is completed.");
                         }
-                        else if (args.Length == 3 && args[1] == "--mailcheck")
+                        else if (args.Length == 3 && args[1] == "--mailcheck" && !string.IsNullOrWhiteSpace(args[2]))
                         {
-                            email = args[2];
+                            arrayOfEmails = Array.ConvertAll(args[2].Split(','), p => p.Trim()).Where(i => !string.IsNullOrEmpty(i)).ToArray();
                             SendMail();
                             ConsoleWriteSuccess("Mailcheck is completed.");
                         }
@@ -51,15 +51,18 @@ namespace TicketsAvailabilityAlerting
                     case "--normalmode":
                         if ( args.Length == 9 && 
                              args.Contains("--url") &&
-                             args.Contains("--timer") &&
-                             args.Contains("--email") &&
+                             !string.IsNullOrWhiteSpace(args[Array.IndexOf(args, "--url") + 1]) &&
+                             args.Contains("--emails") &&
+                             !string.IsNullOrWhiteSpace(args[Array.IndexOf(args, "--emails") + 1]) &&
                              args.Contains("--keywords") &&
-                             int.TryParse(args[1 + Array.IndexOf(args, "--timer")], out timerInSec)
+                             !string.IsNullOrWhiteSpace(args[Array.IndexOf(args, "--keywords") + 1]) &&
+                             args.Contains("--timer") &&
+                             int.TryParse(args[Array.IndexOf(args, "--timer") + 1], out timerInSec)
                            )
                         {
-                            arrayOfKeywords = Array.ConvertAll(args[1 + Array.IndexOf(args, "--keywords")].Split(','), p => p.Trim());
-                            email = args[1 + Array.IndexOf(args, "--email")];
-                            url = args[1 + Array.IndexOf(args, "--url")];
+                            arrayOfKeywords = Array.ConvertAll(args[Array.IndexOf(args, "--keywords") + 1].Split(','), p => p.Trim()).Where(i => !string.IsNullOrEmpty(i)).ToArray();
+                            arrayOfEmails = Array.ConvertAll(args[Array.IndexOf(args, "--emails") + 1].Split(','), p => p.Trim()).Where(i => !string.IsNullOrEmpty(i)).ToArray();
+                            url = args[Array.IndexOf(args, "--url") + 1];
 
                             Timer t = new(TimerCallback, null, 0, 1000 * timerInSec);
                             
@@ -121,7 +124,10 @@ namespace TicketsAvailabilityAlerting
             mail.From = new MailAddress("konstantinos.rammos@haf.gr", "TicketsAvailabilityAlerting");
 
             // To
-            mail.To.Add(email);
+            foreach (var email in arrayOfEmails)
+            {
+                mail.To.Add(email);
+            }
 
             // Subject
             mail.Subject = "----- Email by TicketsAvailabilityAlerting App -----";
@@ -156,29 +162,29 @@ namespace TicketsAvailabilityAlerting
             Console.WriteLine("***********************************************************************************************************");
             Console.WriteLine("*                                                                                                         *");
             Console.WriteLine("*                                    TICKETS AVAILABILITY ALERTING APP                                    *");
-            Console.WriteLine("*                                                                                                 v1.1.0  *");
+            Console.WriteLine("*                                                                                                 v1.2.0  *");
             Console.WriteLine("***********************************************************************************************************");
             Console.WriteLine();
             Console.WriteLine("Usage:");
             Console.WriteLine("     TicketsAvailabilityAlerting --testingmode --soundcheck");
             Console.WriteLine();
-            Console.WriteLine("     TicketsAvailabilityAlerting --testingmode --mailcheck <user-email>");
+            Console.WriteLine("     TicketsAvailabilityAlerting --testingmode --mailcheck <comma-separated-users-emails>");
             Console.WriteLine();
             Console.WriteLine("     TicketsAvailabilityAlerting --normalmode");
             Console.WriteLine("                                 --url <URL>");
-            Console.WriteLine("                                 --keywords <comma-separated-search-keywords>");
             Console.WriteLine("                                 --timer <timer-in-seconds>");
-            Console.WriteLine("                                 --email <user-email>");
+            Console.WriteLine("                                 --keywords <comma-separated-search-keywords>");
+            Console.WriteLine("                                 --emails <comma-separated-users-emails>");
             Console.WriteLine();
             Console.WriteLine("Options:");
-            Console.WriteLine("     --testingmode               Testing mode of the app (this option always goes first).");
-            Console.WriteLine("     --soundcheck                Makes a beep sound.");
-            Console.WriteLine("     --mailcheck <user-email>    Sends a testing e-mail.");
-            Console.WriteLine("     --normalmode                Normal mode of the app (this option always goes first).");
-            Console.WriteLine("     --url <URL>                 The url of the website to search.");
-            Console.WriteLine("     --keywords <keywords>       The keywords which the website is searched with (comma-separated).");
-            Console.WriteLine("     --timer <timer-in-seconds>  Set every how many seconds the website is searched.");
-            Console.WriteLine("     --email <user-mail>         The e-mail of the user to be notified if tickets are available.");
+            Console.WriteLine("     --testingmode                Testing mode of the app (this option always goes first).");
+            Console.WriteLine("     --soundcheck                 Makes a beep sound.");
+            Console.WriteLine("     --mailcheck <list-of-emails> Sends a testing e-mail.");
+            Console.WriteLine("     --normalmode                 Normal mode of the app (this option always goes first).");
+            Console.WriteLine("     --url <URL>                  The url of the website to search.");
+            Console.WriteLine("     --timer <timer-in-seconds>   Set every how many seconds the website is searched.");
+            Console.WriteLine("     --keywords <keywords>        The keywords which the website is searched with (comma-separated).");
+            Console.WriteLine("     --emails <list-of-emails>    The e-mails of the users to be notified if tickets are available.");
             Console.WriteLine();
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.White;
