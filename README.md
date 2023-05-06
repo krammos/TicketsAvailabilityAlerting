@@ -17,7 +17,7 @@ TicketsAvailabilityAlerting --normalmode
                             --url \<URL\>
 			    --keywords \<comma-separated-search-keywords\> 
                             --timer \<timer-in-seconds\>
-			    --email \<user-email\>
+			    --emails \<comma-separated-user-emails\>
 
 OPTIONS:
 
@@ -35,4 +35,4 @@ OPTIONS:
 
 --timer \<timer-in-seconds\>:  Set every how many seconds the website is searched.
 
---email \<user-mail\>:         The e-mail of the user to be notified if tickets are available.
+--emails \<user-mails\>:         The e-mail of the users to be notified if tickets are available.
