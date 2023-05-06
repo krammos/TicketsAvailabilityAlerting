@@ -9,7 +9,7 @@ TicketsAvailabilityAlerting --testingmode --soundcheck
 	
 or
 	
-TicketsAvailabilityAlerting --testingmode --mailcheck \<user-email\>
+TicketsAvailabilityAlerting --testingmode --mailcheck \<comma-separated-users-emails\>
 
 or 
 
@@ -17,7 +17,7 @@ TicketsAvailabilityAlerting --normalmode
                             --url \<URL\>
 			    --keywords \<comma-separated-search-keywords\> 
                             --timer \<timer-in-seconds\>
-			    --emails \<comma-separated-user-emails\>
+			    --emails \<comma-separated-users-emails\>
 
 OPTIONS:
 
@@ -35,4 +35,4 @@ OPTIONS:
 
 --timer \<timer-in-seconds\>:  Set every how many seconds the website is searched.
 
---emails \<user-mails\>:         The e-mail of the users to be notified if tickets are available.
+--emails \<users-mails\>:         The e-mail of the users to be notified if tickets are available.
