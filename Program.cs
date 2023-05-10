@@ -141,7 +141,7 @@ namespace TicketsAvailabilityAlerting
             // SMTP settings
             using SmtpClient smtp = new("mail.haf.gr", 587);
             smtp.UseDefaultCredentials = false;
-            smtp.Credentials = new NetworkCredential("konstantinos.rammos@haf.gr", "Qp0i1400()");
+            smtp.Credentials = new NetworkCredential("kr@haf.gr", "12345");
             smtp.EnableSsl = true;
             smtp.Send(mail);
         }
