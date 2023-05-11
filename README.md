@@ -1,4 +1,4 @@
-# TicketsAvailabilityAlerting (Current Version: 1.2.0)
+# TicketsAvailabilityAlerting (Current Version: 1.2.1)
 The app can periodically search a website for the specified keywords.
 If any of them are found, the app makes a beep sound to notify the user and additionally it sends them an e-mail.
 
